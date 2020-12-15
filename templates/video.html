@@ -1,0 +1,155 @@
+<html>
+  <head>
+    <title>GIF Maker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="{{url_for('static', filename='styles.css')}}?v=6">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+  </head>
+
+  <body>
+    
+    
+    
+
+      <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+    <script type=text/javascript src="{{url_for('static', filename='jquery.min.js') }}"></script>
+    <script type=text/javascript>
+      $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+<h3>Session #:{{unic_Id}}
+    <input type="text" min="0" max="899"  value="{{unic_Id}}" id="clientId" class="invisible"> 
+</h3>
+{% set ojala=unic_Id%}
+<div class="row">
+    <div class="col-md-3">
+        
+    </div>
+    <div class="col-md-6">
+        <div class="col text-center">
+            
+        <img src="{{ url_for('video_feed', id=ojala )}}" class="img-fluid" alt="Responsive image">
+        <p></p>
+        <p><img src="{{ url_for('slider_feed', id=ojala )}}" class="img-fluid" alt="Responsive image" id = "carrousel"></p>
+        <!--div class="slidecontainer">
+            <input type="range" min="0" max="320" value="0" class="slider" id="trackSlider">
+          </div-->
+        <p></p>
+        <p>
+            <button type="button" class="btn btn-outline-dark" id=minus_one >-1</button>
+            <button type="button" class="btn btn-outline-dark" id=play >Play</button>
+            <button type="button" class="btn btn-outline-dark" id=plus_one >+1</button>
+        </p>
+        <p>
+            <button type="button" class="btn btn-outline-dark" id=mark_start >Inicio</button>
+            <button type="button" class="btn btn-outline-dark" id=mark_end >  Fin  </button>
+        </p>
+        <p>
+            <button type="button" class="btn btn-outline-dark" id=downloads >Download</button>
+        </p>        
+        <!--p><a href='{{ url_for("downloads", filename="project1.avi") }}'>File</a>
+        </p-->
+        
+    </div>
+    </div>
+    <div class="col-md-3">
+                  
+            
+        
+        </div>
+    </div>
+    
+
+  </div>
+  <script type=text/javascript>
+    $("#carrousel").click(function(e){
+            var parentOffset = $(this).parent().offset(); 
+            //or $(this).offset(); if you really just want the current element's offset
+            
+            var relX = e.pageX - parentOffset.left;
+            var offsetWidth = $(this).offset();
+            var avance = relX * 1000 / this.offsetWidth;
+            var data = { id: $('input[id="clientId"]').val(), posX: Math.floor(avance)};
+            console.log(parentOffset, e, e.pageX, parentOffset.left, relX, data);
+            //(function(){$.getJSON($SCRIPT_ROOT + '/slider_position', data)})();})
+            $.getJSON($SCRIPT_ROOT + '/slider_position', data);
+    });
+    </script>
+    
+    <script type=text/javascript>
+       
+        $(function() {
+          $('#play').bind('click', function() {
+            $.getJSON($SCRIPT_ROOT + '/play', {
+                a: $('input[id="clientId"]').val()
+            })
+            });
+            return false;
+        });
+        $(function() {
+          $('#plus_one').bind('click', function() {
+            $.getJSON($SCRIPT_ROOT + '/plus_one', {
+                a: $('input[id="clientId"]').val()
+            }, function(data) {
+                $("#trackSlider").val(data.result);
+            })
+            });
+            return false;
+        });
+        $(function() {
+          $('#minus_one').bind('click', function() {
+            $.getJSON($SCRIPT_ROOT + '/minus_one', {
+                a: $('input[id="clientId"]').val()
+            }, function(data) {
+                $("#trackSlider").val(data.result);
+            })
+            });
+            return false;
+        });
+        $(function() {
+          $('#mark_start').bind('click', function() {
+            $.getJSON($SCRIPT_ROOT + '/mark_start', {
+                a: $('input[id="clientId"]').val()
+            })
+            });
+            return false;
+        });
+        $(function() {
+          $('#mark_end').bind('click', function() {
+            $.getJSON($SCRIPT_ROOT + '/mark_end', {
+                a: $('input[id="clientId"]').val()
+            })
+            });
+            return false;
+        });
+        $(function() {
+          $('#downloads').bind('click', function() {
+            $.getJSON($SCRIPT_ROOT + '/downloads', {
+                a: $('input[id="clientId"]').val()
+            })
+            });
+            return false;
+        });   
+    </script>
+    <!--script type=text/javascript>
+     $(function() {
+          $('#downloads').bind('click', function() {
+            $.getJSON($SCRIPT_ROOT + '/downloads', {
+                a: $('input[id="clientId"]').val()
+            })
+            });
+            return false;
+        });  
+    </script-->
+    
+  </body>
+</html>
