@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # USAGE
 # python webstreaming.py --ip 0.0.0.0 --port 8000
 
