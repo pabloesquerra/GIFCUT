@@ -344,5 +344,5 @@ if __name__ == '__main__':
     t1.start()
     app.config['UPLOAD_FOLDER'] = "./UPLOAD_FOLDER"
     # start the flask app
-    app.run(host=args["ip"], port=args["port"], debug=True, threaded=True, use_reloader=False)
+    app.run()
    
