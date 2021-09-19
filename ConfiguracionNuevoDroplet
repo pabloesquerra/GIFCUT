@@ -1,0 +1,13 @@
+adsuser pablo
+usermod -aG sudo pablo
+ufw app list
+ufw allow OpenSSH
+ufw enable
+sudo apt update
+sudo apt install nginx
+sudo ufw app list
+sudo ufw allow 'Nginx HTTP'
+
+sudo apt install python3-pip
+sudo pip install flask
+sudo apt-get install python3-opencv
