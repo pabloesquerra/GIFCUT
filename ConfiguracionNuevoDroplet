@@ -1,5 +1,7 @@
-adsuser pablo
+adduser pablo
 usermod -aG sudo pablo
+sudo apt update
+sudo apt install nginx
 ufw app list
 ufw allow OpenSSH
 ufw enable
