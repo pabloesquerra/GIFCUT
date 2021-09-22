@@ -1,15 +1,9 @@
 # -*- coding: utf-8 -*-
 # USAGE
-# python webstreaming.py --ip 0.0.0.0 --port 8000
 
-# import the necessary packages
-#from pyimagesearch.motion_detection import SingleMotionDetector
-#from imutils.video import VideoStream
 from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
 import datetime
 from flask import Response
-#from pyimagesearch import imutils
-#from pyimagesearch.facedetector import FaceDetector
 from flask import render_template
 import threading
 import argparse
@@ -24,7 +18,6 @@ from computervision.filtros import resize_video
 from servicios.web import Cliente
 import os 
 from werkzeug.utils import secure_filename
-#from pyimagesearch import imutils
 import copy
 from flask import send_file, send_from_directory
 #UPLOAD_FOLDER = './uploads'
@@ -107,7 +100,6 @@ def video_player(id):
             Clientes[id].lastFrame = Clientes[id].nroFrame 
             Clientes[id].update = False
             frame = Clientes[id].frames[Clientes[id].nroFrame]
-            #print('Clientes[id].nroFrame', Clientes[id].nroFrame)
             (flag, encodedImage) = cv2.imencode(".jpg", frame)
             with lock:
                 yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')	
@@ -143,33 +135,17 @@ def slider_player(id):
             slider_img = copy.copy(Clientes[id].slider)
             cv2.line(slider_img,(Clientes[id].track,0),(Clientes[id].track,100),(0,0,255),3)
             slider_img = dibujar_sombra_izq(id=id, img=slider_img)
-        
             slider_img = dibujar_sombra_der(id=id, img=slider_img)
-            
-            #xi, yi, wi, hi = 0, 0, int(Clientes[id].start * 1000 / len(Clientes[id].frames)), 100
-            #xf, yf, wf, hf = 1000, 0, int(Clientes[id].end * 1000 / len(Clientes[id].frames)), 100
-            
-            #sombra izquierda
-            #sub_img = slider_img[yi:yi+hi, xi:xi+wi]
-            #white_rect = np.ones(sub_img.shape, dtype=np.uint8) * 255
-            #res = cv2.addWeighted(sub_img, 0.5, white_rect, 0.5, 1.0)
-            #slider_img[yi:yi+hi, xi:xi+wi] = res
-            #sombra derecha
-            #sub_img = slider_img[yf:yf+hf, xf-wf:xf]
-            #white_rect = np.ones(sub_img.shape, dtype=np.uint8) * 255
-            #res = cv2.addWeighted(sub_img, 0.5, white_rect, 0.5, 1.0)
-            #slider_img[yf:yf+hf, xf-wf:xf] = res
             (flag, encodedImage) = cv2.imencode(".jpg", slider_img)
             with lock:
                 yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + bytearray(encodedImage) + b'\r\n')	
-            #time.sleep(.04)
+            time.sleep(.04)
 
 
 
 # initialize a flask object
 app = Flask(__name__, static_folder='static')
-#app.config('UPLOAD_FOLDER')
-#ws = GeventWebSocket(app)
+
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -179,15 +155,7 @@ def allowed_file(filename):
 def downloads():
     global Clientes
     id = request.args.get('a', 0, type=int)
-    #For windows you need to use drive name [ex: F:/Example.pdf]
-    print(id)
-    #fourcc = cv2.VideoWriter_fourcc(*'MP4V')
-    #out = cv2.VideoWriter('project1.avi',cv2.VideoWriter_fourcc(*'DIVX'), 20.0, (640,480))
-    #for n in range(Clientes[id].start, Clientes[id].end):
-     #   out.write(Clientes[id].frames[n])
     filename = "project1.avi"
-    #out.release()
-    #print(path)
     return True #send_from_directory(app.static_folder, filename, as_attachment=True)
 
 
@@ -235,11 +203,8 @@ def video():
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 #return redirect(url_for('uploads', filename=filename))
                 identificadorUnico = generarId(identificadorUnico)
-                
-                print('comienzo de lectura', datetime.datetime.now())
                 leer_video(filename, id=identificadorUnico)
                 Clientes[identificadorUnico].end = len(Clientes[identificadorUnico].frames)-1
-                print('fin de lectura', datetime.datetime.now())
                 return render_template("video.html", unic_Id= str(identificadorUnico))
 
     return #render_template("video.html", unic_Id= str(identificadorUnico))
@@ -294,8 +259,6 @@ def mark_start():
     id = request.args.get('a', 0, type=int)
     Clientes[id].start = Clientes[id].nroFrame
     Clientes[id].track = int(Clientes[id].nroFrame * 1000 / len(Clientes[id].frames))
-    #print(Clientes[id].start)
-    #print(Clientes[id].end)
     return  jsonify(True) 
 
 @app.route('/mark_end', methods=['GET'])
@@ -329,16 +292,6 @@ Clientes = [ Cliente() for i in range(10)]
 identificadorUnico=0
 
 if __name__ == '__main__':
-    # construct the argument parser and parse command line arguments
-    ap = argparse.ArgumentParser()
-    ap.add_argument("-i", "--ip", type=str, required=True,
-        help="ip address of the device")
-    ap.add_argument("-o", "--port", type=int, required=True,
-        help="ephemeral port number of the server (1024 to 65535)")
-    ap.add_argument("-f", "--frame-count", type=int, default=32,
-        help="# of frames used to construct the background model")
-    args = vars(ap.parse_args())
-
     # start a thread that will perform motion control of the frames
     t1 = threading.Thread(target=control_motion)
     t1.daemon = True
